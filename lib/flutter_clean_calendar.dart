@@ -94,6 +94,7 @@ class Calendar extends StatefulWidget {
   final Color? bottomBarArrowColor;
   final Color? bottomBarColor;
   final String? expandableDateFormat;
+  final ImageProvider<Object> bgImage;
 
   Calendar({
     this.onMonthChanged,
@@ -123,6 +124,7 @@ class Calendar extends StatefulWidget {
     this.bottomBarArrowColor,
     this.bottomBarColor,
     this.expandableDateFormat = 'EEEE MMMM dd, yyyy',
+    required this.bgImage,
   });
 
   @override
@@ -247,6 +249,7 @@ class _CalendarState extends State<Calendar> {
             eventDoneColor: widget.eventDoneColor,
             events: widget.events![day],
             isDayOfWeek: true,
+            bgImage: widget.bgImage,
             dayOfWeek: day,
             dayOfWeekStyle: widget.dayOfWeekStyle ??
                 TextStyle(
@@ -283,6 +286,7 @@ class _CalendarState extends State<Calendar> {
             CalendarTile(
               selectedColor: widget.selectedColor,
               todayColor: widget.todayColor,
+              bgImage: widget.bgImage,
               eventColor: widget.eventColor,
               eventDoneColor: widget.eventDoneColor,
               events: widget.events![day],
@@ -296,6 +300,7 @@ class _CalendarState extends State<Calendar> {
             CalendarTile(
                 selectedColor: widget.selectedColor,
                 todayColor: widget.todayColor,
+                bgImage: widget.bgImage,
                 eventColor: widget.eventColor,
                 eventDoneColor: widget.eventDoneColor,
                 events: widget.events![day],
