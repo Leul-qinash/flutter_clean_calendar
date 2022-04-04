@@ -91,16 +91,19 @@ class CalendarTile extends StatelessWidget {
             decoration: isSelected && date != null
                 ? BoxDecoration(
                     shape: BoxShape.circle,
-                    image: DecorationImage(
-                      // ignore: unnecessary_null_comparison
-                      image: bgImage,
-                      fit: BoxFit.fill,
-                    ),
                     color: selectedColor != null
                         ? selectedColor
                         : Theme.of(context).primaryColor,
                   )
-                : BoxDecoration(), // no decoration when not selected
+                : events != null && events!.length > 0
+                    ? BoxDecoration(
+                        shape: BoxShape.circle,
+                        image: DecorationImage(
+                          image: bgImage,
+                          fit: BoxFit.fill,
+                        ),
+                      )
+                    : BoxDecoration(), // no decoration when not selected
             alignment: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -109,16 +112,17 @@ class CalendarTile extends StatelessWidget {
                 Text(
                   date != null ? DateFormat("d").format(date!) : '',
                   style: TextStyle(
-                      fontSize: 14.0,
-                      fontWeight: FontWeight.w400,
-                      color: isSelected && this.date != null
-                          ? Colors.white
-                          : Utils.isSameDay(this.date!, DateTime.now())
-                              ? todayColor
-                              : inMonth
-                                  ? Colors.black
-                                  : Colors
-                                      .grey), // Grey color for previous or next months dates
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.w400,
+                    color: isSelected && this.date != null ||
+                            events != null && events!.length > 0
+                        ? Colors.white
+                        : Utils.isSameDay(this.date!, DateTime.now())
+                            ? todayColor
+                            : inMonth
+                                ? Colors.black
+                                : Colors.grey,
+                  ), // Grey color for previous or next months dates
                 ),
                 // Dots for the events
                 events != null && events!.length > 0
@@ -147,7 +151,7 @@ class CalendarTile extends StatelessWidget {
                                         Theme.of(context).primaryColor;
                                   if (isSelected) return Colors.white;
                                   return eventColor ??
-                                      Theme.of(context).accentColor;
+                                      Theme.of(context).colorScheme.secondary;
                                 }())),
                           );
                         }).toList())

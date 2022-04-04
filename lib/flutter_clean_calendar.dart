@@ -386,12 +386,8 @@ class _CalendarState extends State<Calendar> {
                 padding: EdgeInsets.all(0.0),
                 itemBuilder: (BuildContext context, int index) {
                   final CleanCalendarEvent event = _selectedEvents![index];
-                  final String start =
-                      DateFormat('HH:mm').format(event.startTime).toString();
-                  final String end =
-                      DateFormat('HH:mm').format(event.endTime).toString();
                   return Container(
-                    height: 60.0,
+                    height: 110.0,
                     child: InkWell(
                       onTap: () {
                         if (widget.onEventSelected != null) {
@@ -402,27 +398,37 @@ class _CalendarState extends State<Calendar> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: <Widget>[
                           Expanded(
-                            flex: 5,
+                            flex: 30,
                             child: Padding(
                               padding: const EdgeInsets.all(4.0),
                               child: Container(
-                                color: event.color,
+                                decoration: BoxDecoration(
+                                  color: event.color,
+                                  borderRadius: BorderRadius.circular(5.0),
+                                  image: DecorationImage(
+                                    image: event.image,
+                                    fit: BoxFit.fill,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                           Expanded(
-                            flex: 75,
+                            flex: 40,
                             child: Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.center,
+                                mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
-                                  Text(event.summary,
+                                  Text(event.title,
+                                      style: Theme.of(context)
+                                          .textTheme
+                                          .subtitle1),
+                                  Text(event.description,
                                       style: Theme.of(context)
                                           .textTheme
                                           .subtitle2),
-                                  Text(event.description)
                                 ],
                               ),
                             ),
@@ -433,13 +439,8 @@ class _CalendarState extends State<Calendar> {
                               padding: const EdgeInsets.all(8.0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.end,
-                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Text(start,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .bodyText1),
-                                  Text(end,
+                                  Text(event.status,
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyText1),
