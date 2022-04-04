@@ -387,7 +387,7 @@ class _CalendarState extends State<Calendar> {
                 itemBuilder: (BuildContext context, int index) {
                   final CleanCalendarEvent event = _selectedEvents![index];
                   return Container(
-                    height: 80.0,
+                    height: 100.0,
                     padding:
                         EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.2),
                     child: InkWell(
@@ -408,7 +408,7 @@ class _CalendarState extends State<Calendar> {
                                   color: event.color,
                                   borderRadius: BorderRadius.circular(5.0),
                                   image: DecorationImage(
-                                    image: event.image,
+                                    image: event.image.image,
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -416,9 +416,9 @@ class _CalendarState extends State<Calendar> {
                             ),
                           ),
                           Expanded(
-                            flex: 40,
+                            flex: 50,
                             child: Padding(
-                              padding: const EdgeInsets.all(8.0),
+                              padding: const EdgeInsets.all(1.2),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
@@ -428,11 +428,21 @@ class _CalendarState extends State<Calendar> {
                                         fontSize: 16.0,
                                         fontWeight: FontWeight.bold,
                                       )),
-                                  Text(event.description,
-                                      style: TextStyle(
-                                        fontSize: 14.0,
-                                        fontWeight: FontWeight.normal,
-                                      )),
+                                  Text(
+                                    event.formerPrice,
+                                    style: TextStyle(
+                                      decoration: TextDecoration.lineThrough,
+                                    ),
+                                  ),
+                                  Text(
+                                    event.discountPrice,
+                                  ),
+                                  Text(
+                                    event.date,
+                                  ),
+                                  Text(
+                                    event.quantity,
+                                  ),
                                 ],
                               ),
                             ),

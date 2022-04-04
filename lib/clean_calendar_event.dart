@@ -2,18 +2,22 @@ import 'package:flutter/material.dart';
 
 class CleanCalendarEvent {
   String title;
-  String description;
-  String location;
+  String date;
+  String formerPrice;
+  String discountPrice;
+  String quantity;
   String status;
   Color color;
   bool isAllDay;
   bool isDone;
-  ImageProvider image;
+  Image image;
 
   CleanCalendarEvent(
       {required this.title,
-      required this.description,
-      this.location = '',
+      required this.date,
+      required this.formerPrice,
+      required this.discountPrice,
+      required this.quantity,
       required this.status,
       this.color = Colors.white,
       this.isAllDay = false,
