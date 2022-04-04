@@ -387,7 +387,9 @@ class _CalendarState extends State<Calendar> {
                 itemBuilder: (BuildContext context, int index) {
                   final CleanCalendarEvent event = _selectedEvents![index];
                   return Container(
-                    height: 110.0,
+                    height: 80.0,
+                    padding:
+                        EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.2),
                     child: InkWell(
                       onTap: () {
                         if (widget.onEventSelected != null) {
@@ -422,13 +424,15 @@ class _CalendarState extends State<Calendar> {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 children: [
                                   Text(event.title,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle1),
+                                      style: TextStyle(
+                                        fontSize: 16.0,
+                                        fontWeight: FontWeight.bold,
+                                      )),
                                   Text(event.description,
-                                      style: Theme.of(context)
-                                          .textTheme
-                                          .subtitle2),
+                                      style: TextStyle(
+                                        fontSize: 14.0,
+                                        fontWeight: FontWeight.normal,
+                                      )),
                                 ],
                               ),
                             ),
