@@ -387,7 +387,7 @@ class _CalendarState extends State<Calendar> {
                 itemBuilder: (BuildContext context, int index) {
                   final CleanCalendarEvent event = _selectedEvents![index];
                   return Container(
-                    height: 100.0,
+                    height: 125.0,
                     padding:
                         EdgeInsets.symmetric(horizontal: 5.0, vertical: 2.2),
                     child: InkWell(
@@ -418,7 +418,7 @@ class _CalendarState extends State<Calendar> {
                           Expanded(
                             flex: 50,
                             child: Padding(
-                              padding: const EdgeInsets.all(1.2),
+                              padding: const EdgeInsets.all(1.5),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisAlignment: MainAxisAlignment.start,
