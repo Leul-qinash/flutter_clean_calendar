@@ -221,18 +221,16 @@ class _CalendarState extends State<Calendar> {
           horizontalThreshold: 40.0,
           swipeDetectionMoment: SwipeDetectionMoment.onUpdate,
         ),
-        child: SingleChildScrollView(
-          child: Column(children: <Widget>[
-            GridView.count(
-              childAspectRatio: 1.5,
-              primary: false,
-              shrinkWrap: true,
-              crossAxisCount: 7,
-              padding: EdgeInsets.only(bottom: 0.0),
-              children: calendarBuilder(),
-            ),
-          ]),
-        ),
+        child: Column(children: <Widget>[
+          GridView.count(
+            childAspectRatio: 1.5,
+            primary: false,
+            shrinkWrap: true,
+            crossAxisCount: 7,
+            padding: EdgeInsets.only(bottom: 0.0),
+            children: calendarBuilder(),
+          ),
+        ]),
       ),
     );
   }
