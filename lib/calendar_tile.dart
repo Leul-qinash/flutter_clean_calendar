@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_customized_clean_calendar/orderTooltip.dart';
+import 'package:just_the_tooltip/just_the_tooltip.dart';
 import './date_utils.dart';
 import './clean_calendar_event.dart';
 import "package:intl/intl.dart";
@@ -25,7 +27,7 @@ import "package:intl/intl.dart";
 /// [eventColor] can be used to color the dots in the calendar tile representing an event. The color, that
 ///     is set in the properties of the [CleanCalendarEvent]  has priority over this parameter
 /// [eventDoneColor] a [Color] object für displaying "done" events (events in the past)
-class CalendarTile extends StatelessWidget {
+class CalendarTile extends StatefulWidget {
   final VoidCallback? onDateSelected;
   final DateTime? date;
   final String? dayOfWeek;
@@ -40,7 +42,11 @@ class CalendarTile extends StatelessWidget {
   final Color? todayColor;
   final Color? eventColor;
   final Color? eventDoneColor;
-  final ImageProvider<Object> bgImage;
+  final Widget message;
+  final Color? tooltipColor;
+  final bool showTooltip;
+  final void Function()? onDismiss;
+  final List<OrderTooltip>? tooltips;
 
   CalendarTile({
     this.onDateSelected,
@@ -57,23 +63,34 @@ class CalendarTile extends StatelessWidget {
     this.todayColor,
     this.eventColor,
     this.eventDoneColor,
-    required this.bgImage,
+    this.tooltipColor,
+    required this.message,
+    this.showTooltip: false,
+    this.onDismiss,
+    this.tooltips,
   });
+
+  @override
+  State<CalendarTile> createState() => _CalendarTileState();
+}
+
+class _CalendarTileState extends State<CalendarTile> {
+  final JustTheController? tooltipController = JustTheController();
 
   /// This function [renderDateOrDayOfWeek] renders the week view or the month view. It is
   /// responsible for displaying a calendar tile. This can be a day (i.e. "Mon", "Tue" ...) in
-  /// the header row or a date tile for each day of a week or a month. The property [isDayOfWeek]
+  /// the header row or a date tile for each day of a week or a month. The property [widget.isDayOfWeek]
   /// of the [CalendarTile] decides, if the rendered item should be a day or a date tile.
   Widget renderDateOrDayOfWeek(BuildContext context) {
     // We decide, if this calendar tile should display a day name in the header row. If this is the
     // case, we return a widget, that contains a text widget with style property [dayOfWeekStyle]
-    if (isDayOfWeek) {
+    if (widget.isDayOfWeek) {
       return new InkWell(
         child: new Container(
           alignment: Alignment.center,
           child: Text(
-            dayOfWeek ?? '',
-            style: dayOfWeekStyle,
+            widget.dayOfWeek ?? '',
+            style: widget.dayOfWeekStyle,
           ),
         ),
       );
@@ -81,82 +98,193 @@ class CalendarTile extends StatelessWidget {
       // Here the date tiles get rendered. Initially eventCount is set to 0.
       // Every date tile can show up to three dots representing an event.
       int eventCount = 0;
-      return InkWell(
-        onTap: onDateSelected, // react on tapping
-        child: Padding(
-          padding: const EdgeInsets.all(1.0),
-          child: Container(
-            // If this tile is the selected date, draw a colored circle on it. The circle is filled with
-            // the color passed with the selectedColor parameter or red color.
-            decoration: isSelected && date != null
-                ? BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: selectedColor != null
-                        ? selectedColor
-                        : Theme.of(context).primaryColor,
-                  )
-                : events != null && events!.length > 0
+      if (widget.date!.isBefore(DateTime(
+              DateTime.now().year, DateTime.now().month, DateTime.now().day)) ||
+          widget.date!.isAfter(DateTime(DateTime.now().year,
+              DateTime.now().month, DateTime.now().day + 14))) {
+        return InkWell(
+          onTap: widget.onDateSelected, // react on tapping
+          child: JustTheTooltip(
+            barrierDismissible: false,
+            controller: tooltipController,
+            backgroundColor: widget.tooltipColor,
+            preferredDirection: AxisDirection.up,
+            showDuration: Duration(seconds: 10),
+            content: widget.message,
+            onDismiss: widget.onDismiss,
+            child: Padding(
+              padding: const EdgeInsets.all(1.0),
+              child: Container(
+                // If this tile is the selected date, draw a colored circle on it. The circle is filled with
+                // the color passed with the selectedColor parameter or red color.
+                decoration: widget.isSelected &&
+                        widget.date != null &&
+                        widget.events != null &&
+                        widget.events!.length > 0
                     ? BoxDecoration(
                         shape: BoxShape.circle,
                         image: DecorationImage(
-                          image: bgImage,
+                          image: widget.events![0].image.image,
                           fit: BoxFit.fill,
                         ),
                       )
-                    : BoxDecoration(), // no decoration when not selected
-            alignment: Alignment.center,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                // Date display
-                Text(
-                  date != null ? DateFormat("d").format(date!) : '',
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.w400,
-                    color: isSelected && this.date != null ||
-                            events != null && events!.length > 0
-                        ? Colors.white
-                        : Utils.isSameDay(this.date!, DateTime.now())
-                            ? todayColor
-                            : inMonth
-                                ? Colors.black
-                                : Colors.grey,
-                  ), // Grey color for previous or next months dates
+                    : widget.events != null && widget.events!.length > 0
+                        ? BoxDecoration(
+                            shape: BoxShape.circle,
+                            image: DecorationImage(
+                              image: widget.events![0].image.image,
+                              fit: BoxFit.fill,
+                            ),
+                          )
+                        : BoxDecoration(), // no decoration when not selected
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    // Date display
+                    Text(
+                      widget.date != null
+                          ? DateFormat("d").format(widget.date!)
+                          : '',
+                      style: TextStyle(
+                        fontSize: 14.0,
+                        fontWeight: FontWeight.w400,
+                        color: widget.isSelected &&
+                                this.widget.date != null &&
+                                widget.events != null &&
+                                widget.events!.length > 0
+                            ? Colors.white
+                            : Colors.grey,
+                      ), // Grey color for previous or next months dates
+                    ),
+                    // Dots for the events
+                    widget.events != null && widget.events!.length > 0
+                        ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: widget.events!.map((event) {
+                              eventCount++;
+                              // Show a maximum of 3 dots.
+                              if (eventCount > 3) return Container();
+                              return Container(
+                                margin: EdgeInsets.only(
+                                    left: 2.0, right: 2.0, top: 1.0),
+                                width: 5.0,
+                                height: 5.0,
+                                decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    // If event is done (isDone == true) set the color of the dots to
+                                    // the eventDoneColor (if given) otherwise use the primary color of
+                                    // the theme
+                                    // If the event is now donw yet, we use the given eventColor or the
+                                    // color property of the CleanCalendarEvent. If both aren't set, then
+                                    // the accent color of the theme get used.
+                                    color: (() {
+                                      if (event.isDone)
+                                        return widget.eventDoneColor ??
+                                            Theme.of(context).primaryColor;
+                                      if (widget.isSelected)
+                                        return Colors.white;
+                                      return widget.eventColor ??
+                                          Theme.of(context)
+                                              .colorScheme
+                                              .secondary;
+                                    }())),
+                              );
+                            }).toList())
+                        : Container(),
+                  ],
                 ),
-                // Dots for the events
-                events != null && events!.length > 0
-                    ? Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: events!.map((event) {
-                          eventCount++;
-                          // Show a maximum of 3 dots.
-                          if (eventCount > 3) return Container();
-                          return Container(
-                            margin: EdgeInsets.only(
-                                left: 2.0, right: 2.0, top: 1.0),
-                            width: 5.0,
-                            height: 5.0,
-                            decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                // If event is done (isDone == true) set the color of the dots to
-                                // the eventDoneColor (if given) otherwise use the primary color of
-                                // the theme
-                                // If the event is now donw yet, we use the given eventColor or the
-                                // color property of the CleanCalendarEvent. If both aren't set, then
-                                // the accent color of the theme get used.
-                                color: (() {
-                                  if (event.isDone)
-                                    return eventDoneColor ??
-                                        Theme.of(context).primaryColor;
-                                  if (isSelected) return Colors.white;
-                                  return eventColor ??
-                                      Theme.of(context).colorScheme.secondary;
-                                }())),
-                          );
-                        }).toList())
-                    : Container(),
-              ],
+              ),
+            ),
+          ),
+        );
+      }
+      return JustTheTooltip(
+        controller: tooltipController,
+        backgroundColor: widget.tooltipColor,
+        preferredDirection: AxisDirection.up,
+        showDuration: Duration(seconds: 10),
+        content: widget.message,
+        onDismiss: widget.onDismiss,
+        child: InkWell(
+          onTap: widget.onDateSelected, // react on tapping
+          child: Padding(
+            padding: const EdgeInsets.all(1.0),
+            child: Container(
+              // If this tile is the selected date, draw a colored circle on it. The circle is filled with
+              // the color passed with the selectedColor parameter or red color.
+              decoration: widget.isSelected && widget.date != null
+                  ? BoxDecoration(
+                      shape: BoxShape.circle,
+                      color: widget.selectedColor != null
+                          ? widget.selectedColor
+                          : Theme.of(context).primaryColor,
+                    )
+                  : widget.events != null && widget.events!.length > 0
+                      ? BoxDecoration(
+                          shape: BoxShape.circle,
+                          image: DecorationImage(
+                            image: widget.events![0].image.image,
+                            fit: BoxFit.fill,
+                          ),
+                        )
+                      : BoxDecoration(), // no decoration when not selected
+              alignment: Alignment.center,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  // Date display
+                  Text(
+                    widget.date != null
+                        ? DateFormat("d").format(widget.date!)
+                        : '',
+                    style: TextStyle(
+                      fontSize: 14.0,
+                      fontWeight: FontWeight.w400,
+                      color: widget.isSelected && this.widget.date != null ||
+                              widget.events != null && widget.events!.length > 0
+                          ? Colors.white
+                          : Utils.isSameDay(this.widget.date!, DateTime.now())
+                              ? widget.todayColor
+                              : widget.inMonth
+                                  ? Colors.black
+                                  : Colors.grey,
+                    ), // Grey color for previous or next months dates
+                  ),
+                  // Dots for the events
+                  widget.events != null && widget.events!.length > 0
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: widget.events!.map((event) {
+                            eventCount++;
+                            // Show a maximum of 3 dots.
+                            if (eventCount > 3) return Container();
+                            return Container(
+                              margin: EdgeInsets.only(
+                                  left: 2.0, right: 2.0, top: 1.0),
+                              width: 5.0,
+                              height: 5.0,
+                              decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  // If event is done (isDone == true) set the color of the dots to
+                                  // the eventDoneColor (if given) otherwise use the primary color of
+                                  // the theme
+                                  // If the event is now donw yet, we use the given eventColor or the
+                                  // color property of the CleanCalendarEvent. If both aren't set, then
+                                  // the accent color of the theme get used.
+                                  color: (() {
+                                    if (event.isDone)
+                                      return widget.eventDoneColor ??
+                                          Theme.of(context).primaryColor;
+                                    if (widget.isSelected) return Colors.white;
+                                    return widget.eventColor ??
+                                        Theme.of(context).colorScheme.secondary;
+                                  }())),
+                            );
+                          }).toList())
+                      : Container(),
+                ],
+              ),
             ),
           ),
         ),
@@ -165,13 +293,23 @@ class CalendarTile extends StatelessWidget {
   }
 
   @override
+  void initState() {
+    super.initState();
+    Future.delayed(const Duration(microseconds: 1000), () {
+      if (widget.showTooltip) {
+        tooltipController!.showTooltip(immediately: false);
+      }
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     // If a child widget was passed as parameter, this widget gets used to
     // be rendered to display weekday or date
-    if (child != null) {
+    if (widget.child != null) {
       return InkWell(
-        child: child,
-        onTap: onDateSelected,
+        child: widget.child,
+        onTap: widget.onDateSelected,
       );
     }
     return Container(
