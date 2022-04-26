@@ -38,3 +38,7 @@
 ## [0.1.0]
 
 - Slide up/down to show month/week calendar
+
+## [1.2.1]
+
+- Add tooltips 

@@ -1,4 +1,4 @@
-# flutter_clean_calendar
+# flutter_customized_clean_calendar
 
 Simple flutter calendar based on flutter_calendar package.
 Thanks to @AppleEducate for his contributions.
@@ -22,25 +22,22 @@ Column(
   children: <Widget>[
     Container(
       child: Calendar(
-        startOnMonday: true,
-        weekDays: ['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'],
-        events: _events,
-        onRangeSelected: (range) =>
-            print('Range is ${range.from}, ${range.to}'),
-        onDateSelected: (date) => _handleNewDate(date),
-        isExpandable: true,
-        eventDoneColor: Colors.green,
-        selectedColor: Colors.pink,
-        todayColor: Colors.blue,
-        eventColor: Colors.grey,
-        locale: 'de_DE',
-        todayButtonText: 'Heute',
-        expandableDateFormat: 'EEEE, dd. MMMM yyyy',
-        dayOfWeekStyle: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.w800,
-            fontSize: 11),
-      ),
+          bgImage: const AssetImage("assets/images/calendar_selected.png"),
+          startOnMonday: true,
+          weekDays: const ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+          events: _events,
+          isExpandable: true,
+          eventDoneColor: Colors.green,
+          selectedColor: Colors.pink,
+          todayColor: Colors.blue,
+          eventColor: Colors.black,
+          locale: 'en',
+          todayButtonText: 'Today',
+          isExpanded: true,
+          expandableDateFormat: 'EEEE, dd. MMMM yyyy',
+          dayOfWeekStyle: const TextStyle(
+              color: Colors.black, fontWeight: FontWeight.w800, fontSize: 11),
+        ),
     ),
     _buildEventList()
   ],
